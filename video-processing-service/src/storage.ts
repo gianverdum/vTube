@@ -30,16 +30,17 @@ export function setupDirectories() {
  * @param processedVideoName The name of the processed video file to convert to {@link localProcessedVideoPath}.
  */
 export function convertVideo(rawVideoName: string, processedVideoName: string) {
-    const localRawVideoPath = `raw-videos/${rawVideoName}`;
-    const localProcessedVideoPath = `processed-videos/${processedVideoName}`;
-
-    ffmpeg(localRawVideoPath)
+    return new Promise<void>((resolve, reject) => {
+        ffmpeg('${localRawVideoPath}/$rawVideoName')
         .outputOptions("-vf", "scale=-1:360")
         .on("end", () => {
             console.log("Processing finished successfully.");
+            resolve();
         })
         .on("error", (err) => {
             console.log("An error occurred: " + err.message);
+            reject(err);
         })
-        .save(localProcessedVideoPath);
+        .save('${localProcessedVideoPath}/$processedVideoName');
+    });
 }
