@@ -28,19 +28,50 @@ export function setupDirectories() {
 /**
  * @param rawVideoName The name of the raw video file to convert from {@link localRawVideoPtah}.
  * @param processedVideoName The name of the processed video file to convert to {@link localProcessedVideoPath}.
+ * @returns A promise that resolves when the video conversion is complete.
  */
 export function convertVideo(rawVideoName: string, processedVideoName: string) {
     return new Promise<void>((resolve, reject) => {
-        ffmpeg('${localRawVideoPath}/$rawVideoName')
+        ffmpeg(`${localRawVideoPath}/${rawVideoName}`)
         .outputOptions("-vf", "scale=-1:360")
         .on("end", () => {
             console.log("Processing finished successfully.");
             resolve();
         })
         .on("error", (err) => {
-            console.log("An error occurred: " + err.message);
+            console.log(`An error occurred: ${err.message}`);
             reject(err);
         })
-        .save('${localProcessedVideoPath}/$processedVideoName');
+        .save(`${localProcessedVideoPath}/${processedVideoName}`);
     });
+}
+
+/**
+ * @param fileName - The name of the file to download from the {@link rawVideoBucketName} bucket into the {@link localRawVideoPath} folder.
+ * @returns A promise that resolves when the file has been downloaded.
+ */
+export async function downloadRawVideo(fileName: string) {
+    await storage.bucket(rawVideoBucketName)
+    .file(fileName)
+        .download({ destination: `${localRawVideoPath}/${fileName}` });
+
+    console.log(
+        `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`);
+}
+
+/**
+ * @param fileName - The name of the file to upload from the {@link localProcessedVideoPath} folder into the {@link processedVideoBucketName}.
+ * @returns A promise that resolves when the file has been uploaded.
+ */
+export async function uploadProcessedVideo(fileName: string) {
+    const bucket = storage.bucket(processedVideoBucketName);
+
+    await bucket.upload(`${localProcessedVideoPath}/${fileName}`, {
+        destination: fileName,
+    });
+    console.log(
+        `${localProcessedVideoPath}/${fileName} uploaded to gs://${processedVideoBucketName}/${fileName}.`
+    );
+
+    await bucket.file(fileName).makePublic();
 }

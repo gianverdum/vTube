@@ -1,13 +1,8 @@
 import express from 'express';
 import ffmpeg from 'fluent-ffmpeg';
 
-// Set FFmpeg binary path (check your installed path with `which ffmpeg`)
-ffmpeg.setFfmpegPath('/usr/bin/ffmpeg');
-ffmpeg.setFfprobePath('/usr/bin/ffprobe');
 
 const app = express();
-
-// Add this line to parse JSON request bodies
 app.use(express.json());
 
 app.post('/process-video', (req, res) => {
