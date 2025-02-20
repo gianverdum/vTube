@@ -16,13 +16,8 @@ const localProcessedVideoPath = "./processed-videos";
  * Creates the local directories for raw and processed videos.
  */
 export function setupDirectories() {
-    if (!fs.existsSync("raw-videos")) {
-        fs.mkdirSync("raw-videos");
-    }
-
-    if (!fs.existsSync("processed-videos")) {
-        fs.mkdirSync("processed-videos");
-    }
+    ensureDirectoryExistence(localRawVideoPath);
+    ensureDirectoryExistence(localProcessedVideoPath);
     }
 
 /**
@@ -113,4 +108,15 @@ function deleteFile(filePath: string): Promise<void> {
             resolve();
         }
     });
+}
+
+/**
+ * Ensures a directory exists, creating if necessary.
+ * @param {string} dirPtah - The directory path to check.
+ */
+function ensureDirectoryExistence(dirPath: string) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+        console.log(`Directory created at ${dirPath}.`);
+    }
 }
