@@ -77,6 +77,22 @@ export async function uploadProcessedVideo(fileName: string) {
 }
 
 /**
+ * @param fileName - The name of the file to delete from the {@link rawVideoBucketName} folder.
+ * @returns A promise that resolves when the file has been deleted.
+ */
+export function deleteRawVideo(fileName: string) {
+    return deleteFile(`${localRawVideoPath}/${fileName}`);
+}
+
+/**
+ * @param fileName - The name of the file to delete from the {@link localProcessedVideoPath} folder.
+ * @returns A promise that resolves when the file has been deleted.
+ */
+export function deleteProcessedVideo(fileName: string) {
+    return deleteFile(`${localProcessedVideoPath}/${fileName}`);
+}
+
+/**
  * @param filePath - The path of the file to delete.
  * @returns A promise that resolves when the file has been deleted.
  */
